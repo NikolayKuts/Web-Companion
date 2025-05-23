@@ -1,6 +1,6 @@
 package com.app.customwordhunt
 
-import com.cambridgedictionary.CambridgeClient
+import com.cambridge.dictionary.client.CambridgeClient
 import android.content.ActivityNotFoundException
 import android.content.ClipData
 import android.content.ClipboardManager

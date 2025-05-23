@@ -1,10 +1,10 @@
 package com.app.customwordhunt
 
-import com.cambridgedictionary.CambridgeClient
-import com.cambridgedictionary.Meaning
-import com.cambridgedictionary.PartsOfSpeech
-import com.cambridgedictionary.Phrase
-import com.cambridgedictionary.Word
+import com.cambridge.dictionary.client.CambridgeClient
+import com.cambridge.dictionary.client.Meaning
+import com.cambridge.dictionary.client.PartsOfSpeech
+import com.cambridge.dictionary.client.Phrase
+import com.cambridge.dictionary.client.Word
 import android.graphics.Bitmap
 import android.util.Log
 import android.webkit.WebResourceRequest

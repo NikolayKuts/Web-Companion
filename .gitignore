@@ -26,3 +26,6 @@ build-logic/build/
 app/.idea/
 .idea/
 /app/src/main/java/com/app/customwordhunt/common/SecretConstants.kt
+
+gradle.properties
+

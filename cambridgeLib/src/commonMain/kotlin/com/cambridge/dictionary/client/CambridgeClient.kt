@@ -1,4 +1,4 @@
-package com.cambridgedictionary
+package com.cambridge.dictionary.client
 
 import io.ktor.client.HttpClient
 import io.ktor.client.call.body
