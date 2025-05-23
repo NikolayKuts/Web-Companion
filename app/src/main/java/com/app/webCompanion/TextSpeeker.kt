@@ -1,4 +1,4 @@
-package com.app.customwordhunt
+package com.app.webCompanion
 
 import android.content.Context
 import android.speech.tts.TextToSpeech

@@ -7,11 +7,11 @@ plugins {
 }
 
 android {
-    namespace = "com.app.customwordhunt"
+    namespace = "com.app.webCompanion"
     compileSdk = 35
 
     defaultConfig {
-        applicationId = "com.app.customwordhunt"
+        applicationId = "com.app.webCompanion"
         minSdk = 25
         targetSdk = 35
         versionCode = 1

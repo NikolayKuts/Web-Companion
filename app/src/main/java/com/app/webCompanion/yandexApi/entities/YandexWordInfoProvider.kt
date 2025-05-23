@@ -1,9 +1,9 @@
-package com.app.customwordhunt.yandexApi.entities
+package com.app.webCompanion.yandexApi.entities
 
 
 import android.content.Context
 import android.util.Log
-import com.app.customwordhunt.common.SecretConstants
+import com.app.webCompanion.common.SecretConstants
 import io.ktor.client.HttpClient
 import io.ktor.client.call.body
 import io.ktor.client.engine.cio.CIO

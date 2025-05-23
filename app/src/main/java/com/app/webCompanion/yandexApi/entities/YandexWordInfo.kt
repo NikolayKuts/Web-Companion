@@ -1,6 +1,5 @@
-package com.app.customwordhunt.yandexApi.entities
+package com.app.webCompanion.yandexApi.entities
 
-import com.example.englishpatterns.data.yandexApi.entities.Def
 import kotlinx.serialization.Serializable
 
 @Serializable

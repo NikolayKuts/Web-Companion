@@ -1,4 +1,4 @@
-package com.app.customwordhunt
+package com.app.webCompanion
 
 import com.cambridge.dictionary.client.CambridgeClient
 import android.content.ActivityNotFoundException
@@ -17,8 +17,8 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Scaffold
 import androidx.compose.ui.Modifier
 import androidx.lifecycle.lifecycleScope
-import com.app.customwordhunt.ui.theme.CustomWordHuntTheme
-import com.app.customwordhunt.yandexApi.entities.YandexWordInfoProvider
+import com.app.webCompanion.ui.theme.CustomWordHuntTheme
+import com.app.webCompanion.yandexApi.entities.YandexWordInfoProvider
 import com.lib.lokdroid.core.LoKdroid
 import com.lib.lokdroid.data.default_implementation.FormaterBuilder
 import kotlinx.coroutines.Dispatchers

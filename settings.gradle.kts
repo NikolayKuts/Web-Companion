@@ -19,6 +19,6 @@ dependencyResolutionManagement {
     }
 }
 
-rootProject.name = "Custom Word Hunt"
+rootProject.name = "Web-Companion"
 include(":app")
 include(":cambridgeLib")

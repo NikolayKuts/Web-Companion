@@ -1,4 +1,4 @@
-package com.app.customwordhunt.yandexApi.entities
+package com.app.webCompanion.yandexApi.entities
 
 import kotlinx.serialization.Serializable
 

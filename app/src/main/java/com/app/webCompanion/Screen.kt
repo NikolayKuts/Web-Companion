@@ -1,4 +1,4 @@
-package com.app.customwordhunt
+package com.app.webCompanion
 
 import android.webkit.WebView
 import android.webkit.WebView.setWebContentsDebuggingEnabled

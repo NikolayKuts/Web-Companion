@@ -1,4 +1,4 @@
-package com.app.customwordhunt
+package com.app.webCompanion
 
 import com.cambridge.dictionary.client.CambridgeClient
 import com.cambridge.dictionary.client.Meaning
@@ -46,8 +46,8 @@ import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
-import com.app.customwordhunt.yandexApi.entities.LoadingState
-import com.app.customwordhunt.yandexApi.entities.YandexWordInfoProvider
+import com.app.webCompanion.yandexApi.entities.LoadingState
+import com.app.webCompanion.yandexApi.entities.YandexWordInfoProvider
 import com.lib.lokdroid.core.logD
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
