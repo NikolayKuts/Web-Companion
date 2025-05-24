@@ -1,18 +1,15 @@
 package com.app.webCompanion
 
-import com.cambridge.dictionary.client.CambridgeClient
-import com.cambridge.dictionary.client.Meaning
-import com.cambridge.dictionary.client.PartsOfSpeech
-import com.cambridge.dictionary.client.Phrase
-import com.cambridge.dictionary.client.Word
 import android.graphics.Bitmap
 import android.util.Log
 import android.webkit.WebResourceRequest
+import android.webkit.WebSettings
 import android.webkit.WebView
 import android.webkit.WebView.setWebContentsDebuggingEnabled
 import android.webkit.WebViewClient
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -34,11 +31,13 @@ import androidx.compose.material3.rememberBottomSheetScaffoldState
 import androidx.compose.material3.rememberStandardBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.State
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
@@ -46,8 +45,13 @@ import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
+import com.cambridge.dictionary.client.CambridgeClient
 import com.app.webCompanion.yandexApi.entities.LoadingState
 import com.app.webCompanion.yandexApi.entities.YandexWordInfoProvider
+import com.cambridge.dictionary.core.Meaning
+import com.cambridge.dictionary.core.PartsOfSpeech
+import com.cambridge.dictionary.core.Phrase
+import com.cambridge.dictionary.core.Word
 import com.lib.lokdroid.core.logD
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -59,12 +63,11 @@ fun SearchScreen(
     modifier: Modifier = Modifier,
     yandexProvider: YandexWordInfoProvider,
     cambridgeClient: CambridgeClient,
+    translation: State<String>,
     finishRequest: () -> Unit,
     onKlafButtonClick: (String) -> Unit,
     onAudioPlayButtonClick: (String) -> Unit,
-    onCambridgeButtonClick: (String) -> Unit,
-//    selectionScript: String,
-//    pageUrl: String,
+    onSelectionChange: (String) -> Unit,
 ) {
     val scaffoldState = rememberBottomSheetScaffoldState(
         bottomSheetState = rememberStandardBottomSheetState(skipHiddenState = false)
@@ -72,112 +75,70 @@ fun SearchScreen(
     val scope = rememberCoroutineScope()
     var selectionInfo by remember { mutableStateOf("") }
     var word by remember { mutableStateOf<Word?>(null) }
+    var isTranslationEnabled by remember { mutableStateOf(false) }
+    val translationText by translation
 
     BottomSheetScaffold(
         modifier = modifier,
         scaffoldState = scaffoldState,
         sheetContent = {
-//            Text(
-//                modifier = Modifier
-//                    .padding(bottom = 50.dp, top = 8.dp)
-//                    .padding(horizontal = 16.dp),
-//                text = selectionInfo
-//            )
             word?.let { WordDetailsScreen(word = it) }
         },
         sheetPeekHeight = 0.dp
     ) {
-        Column() {
-//            var klafButtonEnabled by remember { mutableStateOf(false) }
-//        var selectedWord by remember { mutableStateOf("") }
-            var input by remember { mutableStateOf("") }
-            var urlToLoad by remember { mutableStateOf("https://google.com") }
+        Column {
             var savedUrl = remember { "" }
             var selectedText by remember { mutableStateOf("") }
             var refWebView: WebView? by remember { mutableStateOf(null) }
-            var backNavigationEnabled by remember { mutableStateOf(true) }
+            var isWordHuntEnable by remember { mutableStateOf(true) }
 
-            AndroidView(
+            Box(
                 modifier = Modifier
                     .fillMaxWidth()
                     .weight(1f),
-                factory = { context ->
-                    WebView(context).apply {
-//                webChromeClient = CustomWebChromeClient()
-
-                        settings.apply {
-                            javaScriptEnabled = true
-
-                        }
-
-                        setWebContentsDebuggingEnabled(true)
-//                    loadUrl(pageUrl)
-
-
-                        addJavascriptInterface(
-                            WebAppInterface { selextion ->
-                                selectedText = selextion
-//                                klafButtonEnabled = selectedText.isNotEmpty()
-                            },
-                            "AndroidInterface"
-                        )
-
-                        webViewClient = object : WebViewClient() {
-
-                            override fun onPageStarted(
-                                view: WebView?,
-                                url: String?,
-                                favicon: Bitmap?
-                            ) {
-                                super.onPageStarted(view, url, favicon)
-                                Log.d("TAG", "Page started: $url")
-                                savedUrl = url ?: ""
-                            }
-
-                            override fun onPageFinished(view: WebView?, url: String?) {
-                                view?.evaluateJavascript(
-                                    selectionScript(),
-                                    null
-                                )
-
-                                Log.d("TAG", "onPageFinished $url")
-                            }
-
-                            override fun shouldOverrideUrlLoading(
-                                view: WebView?,
-                                request: WebResourceRequest?
-                            ): Boolean {
-                                val url = request?.url.toString()
-                                Log.d("TAG", "Navigating to: $url")
-
-                                // Return false to allow WebView to load the URL
-                                return false
-                            }
-                        }
-
+            ) {
+                WebViewContent(
+                    urlToLoad = "https://google.com",
+                    onWebViewInitialized = { webView ->
                         if (refWebView == null) {
-                            refWebView = this
+                            refWebView = webView
                         }
-                    }
-                },
-                update = { webView ->
-                    Log.e("TAG", "current url: ${webView.url}, new: $urlToLoad")
-                    webView.loadUrl(urlToLoad)
-                },
-            )
+                    },
+                    onSelectionChange = { selextion ->
+                        selectedText = selextion
+                    },
+                    onPageStarted = { url ->
+                        savedUrl = url ?: ""
+                        isWordHuntEnable = (url?.contains("wooordhunt.ru")?.not() == true)
+                    },
+                )
+
+                if (isTranslationEnabled && translationText.isNotEmpty()) {
+                    Text(
+                        modifier = Modifier
+                            .align(Alignment.BottomCenter)
+                            .padding(8.dp)
+                            .clip(RoundedCornerShape(5.dp))
+                            .background(Color(0xff353535))
+                            .padding(8.dp),
+                        text = translationText,
+                    )
+                }
+            }
 
             Row {
-                Button(
-                    onClick = {
-                        if (savedUrl != "https://wooordhunt.ru/word/$selectedText") {
-                            refWebView?.loadUrl("https://wooordhunt.ru/word/$selectedText")
+                if (isWordHuntEnable) {
+                    Button(
+                        onClick = {
+                            if (savedUrl != "https://wooordhunt.ru/word/$selectedText") {
+                                refWebView?.loadUrl("https://wooordhunt.ru/word/$selectedText")
+                            }
                         }
+                    ) {
+                        Text(text = "Hunt")
                     }
-                ) {
-                    Text(text = "Hunt")
                 }
 
-//                if (klafButtonEnabled) {
                 if (selectedText.isNotEmpty()) {
                     Spacer(modifier = Modifier.width(16.dp))
 
@@ -187,22 +148,9 @@ fun SearchScreen(
                             onKlafButtonClick(selectedText)
                         },
                     ) {
-                        Text("To Klaf")
+                        Text("Klaf")
                     }
-                }
 
-                if (selectedText.isNotEmpty()) {
-//                    Spacer(modifier = Modifier.width(16.dp))
-//
-//                    Button(
-//                        modifier = Modifier,
-//                        onClick = {
-//                            scope.launch { scaffoldState.bottomSheetState.expand() }
-//                        }
-//                    ) {
-//                        Text("Yandex")
-//                    }
-//
                     Spacer(modifier = Modifier.width(16.dp))
 
                     Button(
@@ -218,20 +166,37 @@ fun SearchScreen(
                         modifier = Modifier,
                         colors = ButtonDefaults.buttonColors(containerColor = Color(0xffe7ad76)),
                         onClick = {
-//                            onCambridgeButtonClick(selectedText)
                             scope.launch(Dispatchers.IO) {
                                 word = cambridgeClient.fetchWordData(word = selectedText)
                                 word?.let { scaffoldState.bottomSheetState.expand() }
                             }
                         }
                     ) {
-                        Text("Camb.")
+                        Text("Camb")
                     }
+
+                    Spacer(modifier = Modifier.width(16.dp))
+
+                    Button(
+                        modifier = Modifier,
+                        onClick = { isTranslationEnabled = isTranslationEnabled.not() },
+                    ) {
+                        Text("Tr")
+                    }
+                }
+            }
+
+            LaunchedEffect(scaffoldState.bottomSheetState.currentValue) {
+                if (scaffoldState.bottomSheetState.currentValue != SheetValue.PartiallyExpanded) {
+                    refWebView?.evaluateRiddingSelection()
                 }
             }
 
             LaunchedEffect(key1 = selectedText) {
                 withContext(Dispatchers.IO) {
+                    onSelectionChange(selectedText)
+                    isTranslationEnabled = false
+
                     if (selectedText.isNotEmpty()) {
                         yandexProvider.fetchTextInfo(word = selectedText).collect { state ->
                             when (state) {
@@ -244,7 +209,7 @@ fun SearchScreen(
                                     }"
                                 }
                             }
-                            Log.d("TAG", "state: $state")
+                            logD("yandexProvider.fetchTextInfo state: $state")
                         }
                     }
                 }
@@ -276,6 +241,83 @@ fun SearchScreen(
     }
 }
 
+@Composable
+private fun WebViewContent(
+    urlToLoad: String,
+    onWebViewInitialized: (WebView) -> Unit,
+    onSelectionChange: (String) -> Unit,
+    onPageStarted: (String?) -> Unit,
+) {
+    AndroidView(
+        modifier = Modifier,
+        factory = { context ->
+            WebView(context).apply {
+                settings.apply {
+                    javaScriptEnabled = true
+                    cacheMode = WebSettings.LOAD_DEFAULT  // Use cached resources when available
+                    domStorageEnabled = true              // Required for many modern sites
+
+//                    useWideViewPort = true
+//                    javaScriptEnabled = true
+//                    builtInZoomControls = false
+//                    cacheMode = WebSettings.LOAD_DEFAULT
+                    domStorageEnabled = true
+                    databaseEnabled = true
+//                    textZoom = 100
+                }
+
+                setWebContentsDebuggingEnabled(true)
+
+                addJavascriptInterface(
+                    WebAppInterface { selextion -> onSelectionChange(selextion) },
+                    "AndroidInterface"
+                )
+
+                webViewClient = object : WebViewClient() {
+
+                    override fun onPageStarted(
+                        view: WebView?,
+                        url: String?,
+                        favicon: Bitmap?
+                    ) {
+                        super.onPageStarted(view, url, favicon)
+                        Log.d("TAG", "Page started: $url")
+                        onPageStarted(url)
+                    }
+
+                    override fun onPageFinished(view: WebView?, url: String?) {
+                        Log.d("TAG", "onPageFinished $url")
+                        view?.evaluateSelectionScript()
+                    }
+
+                    override fun shouldOverrideUrlLoading(
+                        view: WebView?,
+                        request: WebResourceRequest?
+                    ): Boolean {
+                        val url = request?.url.toString()
+                        Log.d("TAG", "Navigating to: $url")
+
+                        // Return false to allow WebView to load the URL
+                        return false
+                    }
+                }
+
+                onWebViewInitialized(this)
+            }
+        },
+        update = { webView ->
+            Log.e("TAG", "current url: ${webView.url}, new: $urlToLoad")
+            webView.loadUrl(urlToLoad)
+        },
+    )
+}
+
+private fun WebView.evaluateSelectionScript() {
+    evaluateJavascript(selectionScript()) {
+        logD("evaluateSelectionScript result -> $it")
+    }
+}
+
 private fun selectionScript(): String {
     return """
     document.addEventListener("selectionchange", function() {
@@ -285,20 +327,12 @@ private fun selectionScript(): String {
 """.trimIndent()
 }
 
-//@Preview
-//@Composable
-//fun SearchScreenPreview() {
-//    SearchScreen(
-//        finishRequest = {}
-//    )
-//}
-
-@OptIn(ExperimentalMaterial3Api::class)
-@Composable
-fun MyScaffoldBottomSheet(
-    expend: Boolean
-) {
-
+private fun WebView.evaluateRiddingSelection() {
+    evaluateJavascript(
+        "window.getSelection().removeAllRanges();"
+    ) { selectedText ->
+//        onSelectionChange(selectedText.trim('"'))
+    }
 }
 
 @Composable

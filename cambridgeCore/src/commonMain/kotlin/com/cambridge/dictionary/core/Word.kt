@@ -1,4 +1,4 @@
-package com.cambridge.dictionary.client
+package com.cambridge.dictionary.core
 
 import kotlinx.serialization.Serializable
 

@@ -43,6 +43,10 @@ android {
 
 dependencies {
 
+    /** Modules **/
+    implementation(project(":cambridgeClient"))
+    implementation(project(":cambridgeCore"))
+
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.runtime.ktx)
     implementation(libs.androidx.activity.compose)
@@ -68,5 +72,7 @@ dependencies {
     implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.6.3")
 
     /** cambridgeLib module **/
-    implementation(project(":cambridgeLib"))
+
+    /** ML Kit Translation **/
+    implementation("com.google.mlkit:translate:17.0.3")
 }

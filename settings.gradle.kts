@@ -21,4 +21,5 @@ dependencyResolutionManagement {
 
 rootProject.name = "Web-Companion"
 include(":app")
-include(":cambridgeLib")
+include(":cambridgeCore")
+include(":cambridgeClient")

@@ -8,3 +8,13 @@ plugins {
 
     kotlin("multiplatform") version "1.9.0" apply false
 }
+
+tasks.register("publishAllToGithub") {
+    group = "publishing"
+    description = "Publishes all modules to GitHub Packages"
+
+    dependsOn(
+        ":cambridgeClient:publish",
+        ":cambridgeCore:publish"
+    )
+}

@@ -54,6 +54,7 @@ kotlin {
                 implementation(libs.ktor.client.core)
                 implementation(libs.ktor.client.content.negotiation)
                 implementation(libs.ktor.serialization.kotlinx.json)
+                implementation(project(":cambridgeCore"))
             }
         }
         val androidMain by getting {
@@ -79,7 +80,7 @@ mavenPublishing {
     coordinates(
         groupId = "com.cambridge.dictionary",
         artifactId = "client",
-        version = "1.0.0"
+        version = "1.0.3"
     )
 
     // Configure POM metadata for the published artifact

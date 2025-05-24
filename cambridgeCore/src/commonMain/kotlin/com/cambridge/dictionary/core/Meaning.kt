@@ -1,13 +1,12 @@
-package com.cambridge.dictionary.client
+package com.cambridge.dictionary.core
 
 import kotlinx.serialization.Serializable
 
 @Serializable
-data class Phrase(
+data class Meaning(
     val examples: List<String>,
     val explanation: String,
+    val guidWord: String,
     val level: String,
-    val text: String,
-    val translation: String,
-    val usage: String
+    val translation: String
 )

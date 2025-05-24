@@ -1,6 +1,5 @@
 package com.app.webCompanion
 
-import com.cambridge.dictionary.client.CambridgeClient
 import android.content.ActivityNotFoundException
 import android.content.ClipData
 import android.content.ClipboardManager
@@ -15,14 +14,14 @@ import androidx.activity.enableEdgeToEdge
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Scaffold
+import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Modifier
-import androidx.lifecycle.lifecycleScope
+import com.cambridge.dictionary.client.CambridgeClient
+import com.app.webCompanion.translation.Translator
 import com.app.webCompanion.ui.theme.CustomWordHuntTheme
 import com.app.webCompanion.yandexApi.entities.YandexWordInfoProvider
 import com.lib.lokdroid.core.LoKdroid
 import com.lib.lokdroid.data.default_implementation.FormaterBuilder
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
 
 class MainActivity : ComponentActivity() {
 
@@ -44,9 +43,10 @@ class MainActivity : ComponentActivity() {
         )
     }
 
-    var textSpeaker: TextSpeaker? = null
+    private var textSpeaker: TextSpeaker? = null
     private val yandexProvider by lazy { YandexWordInfoProvider(context = application) }
     private val cambridgeClient by lazy { CambridgeClient }
+    private var translator: Translator? = Translator()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -62,19 +62,6 @@ class MainActivity : ComponentActivity() {
         setContent {
             CustomWordHuntTheme {
                 Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
-//                    Screen(
-//                        modifier = Modifier.padding(innerPadding),
-//                        word = retrievedWord,
-//                        selectionScript = selectionScript(),
-//                        onWordSelected = {
-//                            if (it.isNotEmpty()) {
-//                                copyToClipboard(it)
-//                            }
-//                            Log.d("TAG", "word selected: $it")
-//                        },
-//                        onKlafButtonClick = { startKlafActivityWithCheck(selection = it) },
-//                    )
-
                     SearchScreen(
                         modifier = Modifier.padding(innerPadding),
                         yandexProvider = yandexProvider,
@@ -82,15 +69,10 @@ class MainActivity : ComponentActivity() {
                         finishRequest = { finish() },
                         onKlafButtonClick = { startKlafActivityWithCheck(selection = it) },
                         onAudioPlayButtonClick = { textSpeaker?.speak(it) },
-                        onCambridgeButtonClick = {
-                            lifecycleScope.launch(Dispatchers.IO) {
-//                                val wordAsString = cambridgeClient.fetchWord(it.lowercase())
-//                                Log.d( "TAG", "word as String: $wordAsString")
-
-                                val word = cambridgeClient.fetchWordData(it.lowercase())
-                                Log.d("TAG", "selection: $it; word: $word")
-                            }
+                        onSelectionChange = { selection ->
+                            translator?.translate(text = selection)
                         },
+                        translation = translator?.translation?.collectAsState("")!!
                     )
                 }
             }
@@ -101,23 +83,6 @@ class MainActivity : ComponentActivity() {
         super.onDestroy()
         textSpeaker?.stop()
         textSpeaker = null
-    }
-
-    private fun selectionScript(): String {
-        return """
-    document.addEventListener("selectionchange", function() {
-        let selection = window.getSelection().toString();
-        AndroidInterface.onTextSelected(selection);
-    });
-""".trimIndent()
-//        return """
-//                        document.addEventListener("selectionchange", function() {
-//                            let selection = window.getSelection().toString();
-//                            if (selection.length > 0) {
-//                                AndroidInterface.onTextSelected(selection);
-//                            }
-//                        });
-//                        """.trimIndent()
     }
 
     private fun retrieveSmartSelectedWord(): String? = this.intent.run {
