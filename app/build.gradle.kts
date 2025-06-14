@@ -46,6 +46,8 @@ dependencies {
     /** Modules **/
     implementation(project(":cambridgeClient"))
     implementation(project(":cambridgeCore"))
+    implementation(project(":yandexDictionaryCore"))
+    implementation(project(":yandexDictionaryClient"))
 
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.runtime.ktx)

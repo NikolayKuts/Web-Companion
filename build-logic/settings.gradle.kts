@@ -1,6 +1,4 @@
 pluginManagement {
-    includeBuild("build-logic")
-
     repositories {
         google {
             content {
@@ -13,17 +11,17 @@ pluginManagement {
         gradlePluginPortal()
     }
 }
+
 dependencyResolutionManagement {
     repositoriesMode.set(RepositoriesMode.FAIL_ON_PROJECT_REPOS)
     repositories {
         google()
         mavenCentral()
     }
-}
 
-rootProject.name = "Web-Companion"
-include(":app")
-include(":cambridgeCore")
-include(":cambridgeClient")
-include(":yandexDictionaryCore")
-include(":yandexDictionaryClient")
+    versionCatalogs {
+        create("libs") {
+            from(files("../gradle/libs.versions.toml"))
+        }
+    }
+}

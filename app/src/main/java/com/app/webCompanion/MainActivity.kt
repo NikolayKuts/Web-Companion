@@ -16,12 +16,14 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Modifier
+import com.app.webCompanion.common.SecretConstants
 import com.cambridge.dictionary.client.CambridgeClient
 import com.app.webCompanion.translation.Translator
 import com.app.webCompanion.ui.theme.CustomWordHuntTheme
-import com.app.webCompanion.yandexApi.entities.YandexWordInfoProvider
+import com.app.webCompanion.yandexApi.YandexDictionaryClientWrapper
 import com.lib.lokdroid.core.LoKdroid
 import com.lib.lokdroid.data.default_implementation.FormaterBuilder
+import com.yandex.dictionary.client.YandexDictionaryClient
 
 class MainActivity : ComponentActivity() {
 
@@ -44,7 +46,13 @@ class MainActivity : ComponentActivity() {
     }
 
     private var textSpeaker: TextSpeaker? = null
-    private val yandexProvider by lazy { YandexWordInfoProvider(context = application) }
+    private val yandexClientWrapper by lazy {
+        YandexDictionaryClientWrapper(
+            yandexDictionaryClient = YandexDictionaryClient.getInstance(
+                apiKey = SecretConstants.YandexApi.YANDEX_WORD_INFO_API_KEY
+            ),
+        )
+    }
     private val cambridgeClient by lazy { CambridgeClient }
     private var translator: Translator? = Translator()
 
@@ -64,7 +72,7 @@ class MainActivity : ComponentActivity() {
                 Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
                     SearchScreen(
                         modifier = Modifier.padding(innerPadding),
-                        yandexProvider = yandexProvider,
+                        yandexClientWrapper = yandexClientWrapper,
                         cambridgeClient = cambridgeClient,
                         finishRequest = { finish() },
                         onKlafButtonClick = { startKlafActivityWithCheck(selection = it) },

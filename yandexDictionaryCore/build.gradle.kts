@@ -50,10 +50,6 @@ kotlin {
             dependencies {
                 implementation(kotlin("stdlib-common"))
                 implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.6.3")
-
-//                implementation(libs.ktor.client.core)
-//                implementation(libs.ktor.client.content.negotiation)
-//                implementation(libs.ktor.serialization.kotlinx.json)
             }
         }
         val androidMain by getting {
@@ -65,13 +61,13 @@ kotlin {
 }
 
 customGitHubPagesPublishing {
-    groupId = "com.cambridge.dictionary"
+    groupId = "com.yandex.dictionary"
     artifactId = "core"
     version = "1.0.0"
 
     pon(
-         name = "Canbradge Dictionary Client KMP Library",
-         description = "Provides Cambridge Dictionary entities",
-         inceptionYear = "2025"
+        name = "Ynadex Dictionary Core KMP Library",
+        description = "Provides Yandex Dictionary entities",
+        inceptionYear = "2025"
     )
 }

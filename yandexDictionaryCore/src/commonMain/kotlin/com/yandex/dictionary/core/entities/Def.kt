@@ -1,4 +1,4 @@
-package com.app.webCompanion.yandexApi.entities
+package com.yandex.dictionary.core.entities
 
 import kotlinx.serialization.Serializable
 

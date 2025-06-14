@@ -45,9 +45,9 @@ import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
+import com.app.webCompanion.yandexApi.LoadingState
+import com.app.webCompanion.yandexApi.YandexDictionaryClientWrapper
 import com.cambridge.dictionary.client.CambridgeClient
-import com.app.webCompanion.yandexApi.entities.LoadingState
-import com.app.webCompanion.yandexApi.entities.YandexWordInfoProvider
 import com.cambridge.dictionary.core.Meaning
 import com.cambridge.dictionary.core.PartsOfSpeech
 import com.cambridge.dictionary.core.Phrase
@@ -61,7 +61,7 @@ import kotlinx.coroutines.withContext
 @Composable
 fun SearchScreen(
     modifier: Modifier = Modifier,
-    yandexProvider: YandexWordInfoProvider,
+    yandexClientWrapper: YandexDictionaryClientWrapper,
     cambridgeClient: CambridgeClient,
     translation: State<String>,
     finishRequest: () -> Unit,
@@ -198,7 +198,7 @@ fun SearchScreen(
                     isTranslationEnabled = false
 
                     if (selectedText.isNotEmpty()) {
-                        yandexProvider.fetchTextInfo(word = selectedText).collect { state ->
+                        yandexClientWrapper.fetchTextInfo(word = selectedText).collect { state ->
                             when (state) {
                                 is LoadingState.Error -> {}
                                 LoadingState.Loading -> {}

@@ -9,12 +9,22 @@ plugins {
     kotlin("multiplatform") version "1.9.0" apply false
 }
 
-tasks.register("publishAllToGithub") {
+tasks.register("publishAllCambridgeApiToGithub") {
     group = "publishing"
     description = "Publishes all modules to GitHub Packages"
 
     dependsOn(
         ":cambridgeClient:publish",
         ":cambridgeCore:publish"
+    )
+}
+
+tasks.register("publishAllYandexDictinaryApiToGithub") {
+    group = "publishing"
+    description = "Publishes all modules to GitHub Packages"
+
+    dependsOn(
+        ":yandexDictionaryClient:publish",
+        ":yandexDictionaryCore:publish"
     )
 }
